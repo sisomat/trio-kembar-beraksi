@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Trio Kembar Beraksi: Portal Krisis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            touch-action: none;
+            background-color: #020617;
+        }
+        
+        .bg-cybercity {
+            background-image: url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?q=80&w=1000&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            filter: blur(4px) brightness(0.4);
+            transform: scale(1.1); /* Prevent blur edges */
+        }
+
+        .clouds-layer {
+            background-image: url('https://www.transparenttextures.com/patterns/clouds.png');
+            opacity: 0.3;
+            animation: moveClouds 60s linear infinite;
+        }
+
+        @keyframes moveClouds {
+            from { background-position: 0 0; }
+            to { background-position: 1000px 0; }
+        }
+
+        .portal {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 60vh;
+            border-radius: 50%;
+            background: linear-gradient(to bottom, rgba(30, 64, 175, 0.8), rgba(56, 189, 248, 0.9), rgba(30, 64, 175, 0.8));
+            box-shadow: 0 0 30px 15px rgba(56, 189, 248, 0.5), inset 0 0 20px 5px rgba(255, 255, 255, 0.8);
+            z-index: 10;
+        }
+        .portal-left { left: -15px; }
+        .portal-right { right: -15px; }
+
+        .trash-item {
+            position: absolute;
+            font-size: 2.5rem;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.2s, filter 0.2s;
+            z-index: 20;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+        }
+
+        @keyframes floatTrash {
+            from { left: 0%; }
+            to { left: 100%; }
+        }
+
+        .trash-moving {
+            animation: floatTrash linear forwards;
+        }
+
+        .trash-paused {
+            animation-play-state: paused !important;
+            transform: scale(1.3);
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8));
+            z-index: 30;
+        }
+
+        .bin {
+            width: 70px;
+            height: 90px;
+            border-radius: 8px 8px 16px 16px;
+            border-top: 10px solid rgba(255,255,255,0.2);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), inset 0 -10px 20px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .bin:active { transform: scale(0.95); }
+        .bin-organic { background: linear-gradient(135deg, #22c55e, #14532d); border-color: #4ade80; }
+        .bin-anorganic { background: linear-gradient(135deg, #eab308, #713f12); border-color: #fde047; }
+        .bin-b3 { background: linear-gradient(135deg, #ef4444, #7f1d1d); border-color: #f87171; }
+
+        .hero-avatar {
+            transition: all 0.3s;
+            filter: grayscale(100%) opacity(0.5);
+        }
+        .hero-active {
+            filter: grayscale(0%) opacity(1) drop-shadow(0 0 8px rgba(255,255,255,0.6));
+            transform: scale(1.1);
+            border-color: #4ade80;
+        }
+
+        .callout-box {
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #38bdf8;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        /* 3D Button Styles */
+        .btn-3d {
+            position: relative;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        .btn-3d:active {
+            transform: translateY(4px);
+        }
+        
+        .btn-3d-rose { box-shadow: 0px 6px 0px #9f1239, 0px 10px 15px rgba(0,0,0,0.5); }
+        .btn-3d-rose:active { box-shadow: 0px 2px 0px #9f1239, 0px 4px 5px rgba(0,0,0,0.5); }
+        
+        .btn-3d-cyan { box-shadow: 0px 6px 0px #164e63, 0px 10px 15px rgba(0,0,0,0.5); }
+        .btn-3d-cyan:active { box-shadow: 0px 2px 0px #164e63, 0px 4px 5px rgba(0,0,0,0.5); }
+        
+        .btn-3d-emerald { box-shadow: 0px 8px 0px #064e3b, 0px 12px 20px rgba(0,0,0,0.6); }
+        .btn-3d-emerald:active { transform: translateY(6px); box-shadow: 0px 2px 0px #064e3b, 0px 4px 5px rgba(0,0,0,0.6); }
+
+        .btn-toggle {
+            transition: all 0.1s ease;
+            box-shadow: 0px 4px 0px #334155;
+        }
+        .btn-toggle:active {
+            transform: translateY(2px);
+            box-shadow: 0px 2px 0px #334155;
+        }
+        .btn-toggle-active {
+            background-color: #0891b2 !important;
+            border-color: #22d3ee !important;
+            color: white !important;
+            box-shadow: 0px 4px 0px #164e63 !important;
+        }
+        .btn-toggle-active:active {
+            box-shadow: 0px 2px 0px #164e63 !important;
+        }
+
+        /* Cinematic Fade */
+        @keyframes cinematicFade {
+            0% { opacity: 0; transform: scale(0.95) translateY(20px); filter: blur(5px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+        }
+        .pro-slide:not(.hidden) {
+            animation: cinematicFade 0.8s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="text-slate-100 w-screen h-[100dvh] relative">
+
+    <div id="prologueScreen" class="absolute inset-0 z-[60] bg-slate-950/90 backdrop-blur-xl flex flex-col justify-center items-center p-6 text-center">
+        <div class="relative max-w-2xl w-full border border-slate-700/50 bg-slate-900/60 p-10 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden">
+            <!-- Dekorasi Sudut -->
+            <div class="absolute top-0 left-0 w-16 h-16 border-t-2 border-l-2 border-cyan-500/50 rounded-tl-3xl"></div>
+            <div class="absolute bottom-0 right-0 w-16 h-16 border-b-2 border-r-2 border-cyan-500/50 rounded-br-3xl"></div>
+
+            <div id="proSlide1" class="pro-slide space-y-6">
+                <h1 class="text-5xl md:text-6xl font-black text-rose-500 tracking-wider drop-shadow-[0_0_15px_rgba(225,29,72,0.8)] uppercase">Krisis Global!</h1>
+                <p class="text-lg md:text-xl text-slate-300 font-medium leading-relaxed">Badai anomali membuka portal misterius di langit kota. Sampah-sampah beterbangan tanpa kendali, mengancam kehidupan warga dan merusak ekosistem.</p>
+                <button onclick="nextPrologue(2)" class="btn-3d btn-3d-rose px-8 py-3 bg-rose-600 rounded-xl font-black text-white text-lg tracking-wide mt-4">LANJUT ➔</button>
+            </div>
+            
+            <div id="proSlide2" class="pro-slide hidden space-y-6">
+                <h1 class="text-5xl md:text-6xl font-black text-cyan-400 tracking-wider drop-shadow-[0_0_15px_rgba(34,211,238,0.8)] uppercase">Panggilan Hero</h1>
+                <p class="text-lg md:text-xl text-slate-300 font-medium leading-relaxed">Trio Kembar terpanggil: <span class="text-green-400 font-bold">Eko</span> (Organik), <span class="text-yellow-400 font-bold">Teo</span> (Anorganik), dan <span class="text-red-400 font-bold">Logi</span> (Limbah B3). Hanya mereka yang bisa memilah kekacauan ini.</p>
+                <button onclick="nextPrologue(3)" class="btn-3d btn-3d-cyan px-8 py-3 bg-cyan-600 rounded-xl font-black text-white text-lg tracking-wide mt-4">LANJUT ➔</button>
+            </div>
+            
+            <div id="proSlide3" class="pro-slide hidden space-y-6">
+                <h1 class="text-5xl md:text-6xl font-black text-amber-400 tracking-wider drop-shadow-[0_0_15px_rgba(251,191,36,0.8)] uppercase">Misi Konversi</h1>
+                <p class="text-lg md:text-xl text-slate-300 font-medium leading-relaxed">Tangkap sampah yang terbang, pilih tong yang tepat, dan pecahkan sandi matematika konversi berat untuk menguncinya ke dalam tong. Waktu terbatas!</p>
+                <button onclick="showConfig()" class="btn-3d btn-3d-emerald px-10 py-4 bg-gradient-to-r from-green-600 to-teal-600 rounded-2xl font-black text-white text-2xl tracking-widest mt-4">SIAP BERAKSI!</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="configScreen" class="absolute inset-0 z-[50] bg-slate-900/95 backdrop-blur-md hidden flex flex-col items-center justify-center p-4">
+        <div class="bg-slate-800 border border-slate-600 rounded-2xl p-6 shadow-2xl max-w-sm w-full text-center space-y-6">
+            <h2 class="text-3xl font-black text-cyan-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">PERSIAPAN MISI</h2>
+            
+            <div>
+                <p class="text-sm font-bold text-slate-400 mb-2 tracking-wide">JUMLAH PEMAIN</p>
+                <div class="flex justify-center gap-3">
+                    <button onclick="setPlayerCount(1)" id="btnP1" class="btn-toggle px-5 py-2 bg-slate-700 rounded-lg font-bold border border-slate-500 text-slate-300 text-lg">1P</button>
+                    <button onclick="setPlayerCount(2)" id="btnP2" class="btn-toggle px-5 py-2 bg-slate-700 rounded-lg font-bold border border-slate-500 text-slate-300 text-lg">2P</button>
+                    <button onclick="setPlayerCount(3)" id="btnP3" class="btn-toggle btn-toggle-active px-5 py-2 bg-slate-700 rounded-lg font-bold border border-slate-500 text-slate-300 text-lg">3P</button>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                <p class="text-sm font-bold text-cyan-400 mb-3 tracking-wide">PILIH <span id="heroNeeded" class="text-white text-lg">3</span> HERO AKTIF</p>
+                <div class="flex justify-center gap-4">
+                    <div class="flex flex-col items-center gap-1">
+                        <img src="https://i.ibb.co.com/nsd7gYkh/35067.png" id="avatarEko" onclick="toggleHero('eko')" class="w-16 h-16 rounded-full border-4 border-slate-600 bg-slate-700 cursor-pointer hero-avatar hero-active" alt="Eko">
+                        <span class="text-xs font-bold text-slate-400">EKO</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1">
+                        <img src="https://i.ibb.co.com/L3tb8t4/35072.png" id="avatarTeo" onclick="toggleHero('teo')" class="w-16 h-16 rounded-full border-4 border-slate-600 bg-slate-700 cursor-pointer hero-avatar hero-active" alt="Teo">
+                        <span class="text-xs font-bold text-slate-400">TEO</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-1">
+                        <img src="https://i.ibb.co.com/JF8GRzJy/35079-removebg-preview.png" id="avatarLogi" onclick="toggleHero('logi')" class="w-16 h-16 rounded-full border-4 border-slate-600 bg-slate-700 cursor-pointer hero-avatar hero-active" alt="Logi">
+                        <span class="text-xs font-bold text-slate-400">LOGI</span>
+                    </div>
+                </div>
+                <p id="heroWarnText" class="text-xs text-emerald-400 mt-2 h-4 font-bold">Hero Siap Beraksi!</p>
+            </div>
+
+            <div>
+                <p class="text-sm font-bold text-slate-400 mb-2 tracking-wide">WAKTU (DETIK)</p>
+                <div class="flex justify-center gap-3">
+                    <button onclick="setDuration(30)" id="btnD30" class="btn-toggle px-4 py-2 bg-slate-700 rounded-lg font-bold border border-slate-500 text-slate-300">30</button>
+                    <button onclick="setDuration(60)" id="btnD60" class="btn-toggle btn-toggle-active px-4 py-2 bg-slate-700 rounded-lg font-bold border border-slate-500 text-slate-300">60</button>
+                    <button onclick="setDuration(90)" id="btnD90" class="btn-toggle px-4 py-2 bg-slate-700 rounded-lg font-bold border border-slate-500 text-slate-300">90</button>
+                </div>
+            </div>
+
+            <button onclick="startAction()" class="btn-3d btn-3d-emerald w-full py-4 bg-emerald-600 rounded-xl font-black text-white text-xl tracking-wide mt-2">MULAI AKSI 🚀</button>
+        </div>
+    </div>
+
+    <div id="gameScreen" class="absolute inset-0 hidden">
+        <!-- Backgrounds -->
+        <div class="absolute inset-0 bg-cybercity"></div>
+        <div class="absolute inset-0 clouds-layer"></div>
+        
+        <!-- Portals -->
+        <div class="portal portal-left"></div>
+        <div class="portal portal-right"></div>
+
+        <!-- Header: Avatars & Scores -->
+        <div class="absolute top-4 left-0 w-full flex justify-center gap-6 z-40 px-4">
+            <div id="headEko" class="hidden flex-col items-center">
+                <img src="https://i.ibb.co.com/nsd7gYkh/35067.png" class="w-12 h-12 bg-green-900 border-2 border-green-400 rounded-full shadow-lg">
+                <span class="bg-slate-900 px-3 py-0.5 rounded-full text-xs font-bold mt-1 text-green-300" id="scoreEko">0</span>
+            </div>
+            <div id="headTeo" class="hidden flex-col items-center">
+                <img src="https://i.ibb.co.com/L3tb8t4/35072.png" class="w-12 h-12 bg-yellow-900 border-2 border-yellow-400 rounded-full shadow-lg">
+                <span class="bg-slate-900 px-3 py-0.5 rounded-full text-xs font-bold mt-1 text-yellow-300" id="scoreTeo">0</span>
+            </div>
+            <div id="headLogi" class="hidden flex-col items-center">
+                <img src="https://i.ibb.co.com/JF8GRzJy/35079-removebg-preview.png" class="w-12 h-12 bg-red-900 border-2 border-red-400 rounded-full shadow-lg">
+                <span class="bg-slate-900 px-3 py-0.5 rounded-full text-xs font-bold mt-1 text-red-300" id="scoreLogi">0</span>
+            </div>
+        </div>
+
+        <div class="absolute top-4 right-4 z-40 bg-slate-900/80 px-3 py-1 rounded-lg border border-slate-600 font-mono text-xl font-bold">
+            ⏳ <span id="timerDisplay">60</span>
+        </div>
+        <div class="absolute top-16 right-4 z-40 bg-slate-900/80 px-3 py-1 rounded-lg border border-slate-600 text-xs font-bold text-cyan-300" id="waveDisplay">
+            WAVE 1
+        </div>
+
+        <!-- Trash Container -->
+        <div id="trashContainer" class="absolute inset-0 overflow-hidden z-20"></div>
+
+        <!-- Math Question Callout -->
+        <div id="mathModal" class="hidden absolute bottom-32 left-1/2 -translate-x-1/2 z-50 callout-box w-[90%] max-w-sm rounded-xl p-4 flex flex-col items-center">
+            <p id="mathQuestion" class="text-sm font-bold text-center mb-3 leading-relaxed"></p>
+            <div id="mathOptions" class="grid grid-cols-2 gap-2 w-full">
+                <!-- Options injected by JS -->
+            </div>
+        </div>
+
+        <!-- Bins Dock -->
+        <div class="absolute bottom-6 left-0 w-full flex justify-center gap-6 z-40" id="binsDock">
+            <div id="binEko" class="bin bin-organic hidden" onclick="handleBinClick('organik', 'eko')">
+                <svg class="w-12 h-12 text-white/90 pointer-events-none mix-blend-overlay" viewBox="0 0 24 24" fill="currentColor"><path d="M17,8C8,10 5.9,16.17 3.82,21.34L5.71,22L6.66,19.7C7.14,19.87 7.64,20 8,20C19,20 22,3 22,3C21,5 14,5.25 9,6.25C4,7.25 2,11.5 2,13.5C2,15.5 3.75,17.25 3.75,17.25C7,8 17,8 17,8Z"/></svg>
+            </div>
+            <div id="binTeo" class="bin bin-anorganic hidden" onclick="handleBinClick('anorganik', 'teo')">
+                <svg class="w-12 h-12 text-white/90 pointer-events-none mix-blend-overlay" viewBox="0 0 24 24" fill="currentColor"><path d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.12-.36.18-.57.18-.21 0-.41-.06-.57-.18l-7.9-4.44A.991.991 0 0 1 3 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44c.16-.12.36-.18.57-.18.21 0 .41.06.57.18l7.9 4.44c.32.17.53.5.53.88v9M12 4.15L6.04 7.5 12 10.85l5.96-3.35L12 4.15M5 15.91l6 3.38v-6.71L5 9.21v6.7m14 0v-6.7l-6 3.37v6.71l6-3.38z"/></svg>
+            </div>
+            <div id="binLogi" class="bin bin-b3 hidden" onclick="handleBinClick('b3', 'logi')">
+                <svg class="w-12 h-12 text-white/90 pointer-events-none mix-blend-overlay" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+            </div>
+        </div>
+    </div>
+
+    <div id="victoryScreen" class="absolute inset-0 z-[70] bg-slate-950/90 backdrop-blur-lg hidden flex flex-col items-center justify-center p-6 text-center">
+        <h1 class="text-5xl font-black text-yellow-400 mb-2 animate-bounce">WAKTU HABIS!</h1>
+        <h2 class="text-2xl font-bold text-white mb-8" id="victorySubtitle">Duel Selesai</h2>
+        
+        <div id="winnerBanner" class="bg-gradient-to-r from-indigo-900 to-purple-900 border-2 border-indigo-400 p-6 rounded-2xl shadow-[0_0_30px_rgba(79,70,229,0.5)] mb-8 max-w-md w-full">
+            <p class="text-sm text-indigo-200 font-bold mb-2 tracking-wide">🌟 PEMENANG UTAMA 🌟</p>
+            <div class="flex justify-center mb-2">
+                <img id="winnerImg" src="" class="w-24 h-24 rounded-full border-4 border-yellow-400 bg-slate-800 object-cover">
+            </div>
+            <h3 id="winnerName" class="text-3xl font-black text-white mt-2 drop-shadow-md">EKO</h3>
+            <p class="text-yellow-300 font-mono text-xl mt-1">Skor: <span id="winnerScore">0</span></p>
+        </div>
+
+        <button onclick="resetToConfig()" class="btn-3d btn-3d-cyan px-10 py-4 bg-cyan-600 rounded-xl font-black text-white text-xl tracking-wide">MAIN LAGI ↺</button>
+    </div>
+
+    <!-- Footer Developer -->
+    <footer class="fixed bottom-1 left-0 w-full text-center z-[100] pointer-events-none select-none">
+        <p class="text-[10px] sm:text-xs font-semibold tracking-wide text-slate-400/80 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">Developer by Ifan Shovi, S.Pd</p>
+    </footer>
+
+    <script>
+        // Game State Variables
+        let playerCount = 3;
+        let gameDuration = 60;
+        let activeHeroes = ['eko', 'teo', 'logi'];
+        
+        let timeLeft = 0;
+        let timerInt, spawnInt;
+        let totalCorrect = 0;
+        let currentWave = 1;
+        
+        let scores = { eko: 0, teo: 0, logi: 0 };
+        let selectedTrashData = null; 
+        let selectedTrashEl = null;
+
+        // Trash Definitions (All types spawn regardless of mode)
+        const trashTypes = [
+            { id: 1, type: 'organik', icon: '🍎' }, { id: 2, type: 'organik', icon: '🍌' }, { id: 3, type: 'organik', icon: '🍂' },
+            { id: 4, type: 'anorganik', icon: '🗞️' }, { id: 5, type: 'anorganik', icon: '🥤' }, { id: 6, type: 'anorganik', icon: '🥫' },
+            { id: 7, type: 'b3', icon: '🔋' }, { id: 8, type: 'b3', icon: '🛢️' }, { id: 9, type: 'b3', icon: '🧪' }
+        ];
+
+        function nextPrologue(slideNum) {
+            // Sembunyikan semua slide
+            document.querySelectorAll('.pro-slide').forEach(slide => slide.classList.add('hidden'));
+            // Tampilkan slide tujuan
+            document.getElementById('proSlide' + slideNum).classList.remove('hidden');
+        }
+
+        function showConfig() {
+            document.getElementById('prologueScreen').classList.add('hidden');
+            document.getElementById('configScreen').classList.remove('hidden');
+            setPlayerCount(3); // Default config resets selection correctly
+        }
+
+        function setPlayerCount(num) {
+            playerCount = num;
+            document.getElementById('heroNeeded').innerText = num;
+            
+            ['btnP1', 'btnP2', 'btnP3'].forEach(id => {
+                document.getElementById(id).classList.remove('btn-toggle-active');
+            });
+            document.getElementById(`btnP${num}`).classList.add('btn-toggle-active');
+
+            // Kosongkan pahlawan agar pemain bebas memilih sendiri
+            activeHeroes = [];
+            updateAvatarUI();
+            
+            if (num < 3) {
+                showHeroWarn(`Pilih ${num} hero untuk memulai!`);
+            } else {
+                // Jika 3 pemain, otomatis pilih ketiganya
+                activeHeroes = ['eko', 'teo', 'logi'];
+                updateAvatarUI();
+                showHeroWarn(`Hero Siap Beraksi!`, true);
+            }
+        }
+
+        function toggleHero(hero) {
+            if (activeHeroes.includes(hero)) {
+                activeHeroes = activeHeroes.filter(h => h !== hero);
+            } else {
+                if (activeHeroes.length < playerCount) {
+                    activeHeroes.push(hero);
+                } else {
+                    showHeroWarn(`Maksimal ${playerCount} hero! Batal pilih yang lain dulu.`);
+                    return;
+                }
+            }
+            updateAvatarUI();
+            
+            // Evaluasi peringatan
+            if (activeHeroes.length === playerCount) {
+                showHeroWarn("Hero Siap Beraksi!", true);
+            } else {
+                showHeroWarn(`Pilih ${playerCount - activeHeroes.length} hero lagi!`);
+            }
+        }
+
+        function showHeroWarn(msg, isSuccess = false) {
+            const w = document.getElementById('heroWarnText');
+            w.innerText = msg;
+            if(isSuccess) {
+                w.classList.replace('text-rose-400', 'text-emerald-400');
+            } else {
+                w.classList.replace('text-emerald-400', 'text-rose-400');
+            }
+        }
+
+        function updateAvatarUI() {
+            ['eko', 'teo', 'logi'].forEach(h => {
+                const img = document.getElementById(`avatar${h.charAt(0).toUpperCase() + h.slice(1)}`);
+                if (activeHeroes.includes(h)) {
+                    img.classList.add('hero-active');
+                } else {
+                    img.classList.remove('hero-active');
+                }
+            });
+        }
+
+        function setDuration(sec) {
+            gameDuration = sec;
+            ['btnD30', 'btnD60', 'btnD90'].forEach(id => {
+                document.getElementById(id).classList.remove('btn-toggle-active');
+            });
+            document.getElementById(`btnD${sec}`).classList.add('btn-toggle-active');
+        }
+
+        /* --- GAME ENGINE --- */
+        function startAction() {
+            if (activeHeroes.length !== playerCount) {
+                showHeroWarn(`Harap pilih tepat ${playerCount} hero!`);
+                
+                // Shake effect on warning
+                const w = document.getElementById('heroWarnText');
+                w.style.transform = 'translateX(5px)';
+                setTimeout(() => w.style.transform = 'translateX(-5px)', 50);
+                setTimeout(() => w.style.transform = 'none', 100);
+                return;
+            }
+
+            document.getElementById('configScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+
+            // Reset States
+            scores = { eko: 0, teo: 0, logi: 0 };
+            totalCorrect = 0;
+            currentWave = 1;
+            timeLeft = gameDuration;
+            selectedTrashData = null;
+            if(selectedTrashEl) selectedTrashEl.remove();
+            
+            document.getElementById('trashContainer').innerHTML = "";
+            document.getElementById('mathModal').classList.add('hidden');
+            updateUI();
+
+            // Setup Bins & Headers based on Active Heroes
+            ['eko', 'teo', 'logi'].forEach(h => {
+                const bin = document.getElementById(`bin${h.charAt(0).toUpperCase() + h.slice(1)}`);
+                const head = document.getElementById(`head${h.charAt(0).toUpperCase() + h.slice(1)}`);
+                if(activeHeroes.includes(h)) {
+                    bin.classList.remove('hidden');
+                    head.classList.replace('hidden', 'flex');
+                } else {
+                    bin.classList.add('hidden');
+                    head.classList.replace('flex', 'hidden');
+                }
+            });
+
+            // Start Loops
+            timerInt = setInterval(tick, 1000);
+            spawnInt = setInterval(spawnTrashObj, 2500); // Waktu jeda antar sampah diperlambat agar layar tidak terlalu penuh
+        }
+
+        function tick() {
+            timeLeft--;
+            document.getElementById('timerDisplay').innerText = timeLeft;
+            if (timeLeft <= 0) endGame();
+        }
+
+        function spawnTrashObj() {
+            const container = document.getElementById('trashContainer');
+            const trashData = trashTypes[Math.floor(Math.random() * trashTypes.length)];
+            
+            const el = document.createElement('div');
+            el.className = 'trash-item trash-moving';
+            el.innerText = trashData.icon;
+            
+            // Random Y position (20% to 70% height to avoid header and bins)
+            const topPos = Math.floor(Math.random() * 50) + 20; 
+            el.style.top = topPos + 'vh';
+            
+            // Kecepatan disesuaikan agar lebih lambat, mengadaptasi lebar layar PC dan Mobile
+            const isMobile = window.innerWidth < 768;
+            const minDuration = isMobile ? 12 : 25; // Mode Mobile lambat (min 12s), Mode PC sangat lambat (min 25s)
+            const duration = Math.floor(Math.random() * 10) + minDuration;
+            el.style.animationDuration = duration + 's';
+
+            el.onclick = () => selectTrash(el, trashData);
+
+            // Cleanup after animation
+            el.addEventListener('animationend', () => {
+                if (el.parentNode) el.remove();
+                if (selectedTrashEl === el) resetSelection();
+            });
+
+            container.appendChild(el);
+        }
+
+        function selectTrash(el, data) {
+            // Only select one at a time
+            if (selectedTrashEl && selectedTrashEl !== el) {
+                selectedTrashEl.classList.remove('trash-paused');
+            }
+            selectedTrashEl = el;
+            selectedTrashData = data;
+            el.classList.add('trash-paused');
+        }
+
+        function handleBinClick(expectedType, hero) {
+            if (!selectedTrashEl || !selectedTrashData) return;
+            
+            if (selectedTrashData.type !== expectedType) {
+                // Wrong Bin clicked! Shake effect, unpause trash
+                const bin = document.getElementById(`bin${hero.charAt(0).toUpperCase() + hero.slice(1)}`);
+                bin.style.transform = 'translateX(5px)';
+                setTimeout(() => bin.style.transform = 'translateX(-5px)', 50);
+                setTimeout(() => bin.style.transform = 'none', 100);
+                
+                resetSelection();
+                return;
+            }
+
+            // Correct Bin! Show Math Question
+            generateMathQuestion(hero);
+        }
+
+        function resetSelection() {
+            if (selectedTrashEl) {
+                selectedTrashEl.classList.remove('trash-paused');
+            }
+            selectedTrashEl = null;
+            selectedTrashData = null;
+            document.getElementById('mathModal').classList.add('hidden');
+        }
+
+        function generateMathQuestion(hero) {
+            const modal = document.getElementById('mathModal');
+            const qEl = document.getElementById('mathQuestion');
+            const optEl = document.getElementById('mathOptions');
+            
+            let qText = "", correctAns = "";
+            let w = currentWave;
+            if(w > 3) w = Math.floor(Math.random() * 3) + 1; // Final wave randomizes 1-3
+
+            // Wave 1: Mudah (g to kg / kg to hg)
+            if (w === 1) {
+                const val = (Math.floor(Math.random() * 9) + 1) * 1000;
+                qText = `Berat sampah ${val} g = ... kg?`;
+                correctAns = (val / 1000) + " kg";
+            } 
+            // Wave 2: Sedang (kg + g -> g)
+            else if (w === 2) {
+                const kg = Math.floor(Math.random() * 3) + 1;
+                const g = (Math.floor(Math.random() * 9) + 1) * 100;
+                qText = `${kg} kg + ${g} g = ... g?`;
+                correctAns = (kg * 1000 + g) + " g";
+            } 
+            // Wave 3: HOTS (ton/kuintal - kg -> kg)
+            else {
+                const type = Math.random() > 0.5 ? 'ton' : 'kuintal';
+                const base = type === 'ton' ? 1 : (Math.floor(Math.random() * 3) + 2); // 1 ton or 2-4 kuintal
+                const baseKg = type === 'ton' ? 1000 : base * 100;
+                const sub = (Math.floor(Math.random() * 5) + 1) * 100;
+                qText = `${base} ${type} - ${sub} kg = ... kg?`;
+                correctAns = (baseKg - sub) + " kg";
+            }
+
+            qEl.innerHTML = `<span class="text-cyan-400">Target Tong ${hero.toUpperCase()}:</span><br>${qText}`;
+            
+            // Generate wrong options
+            const numAns = parseFloat(correctAns);
+            const unit = correctAns.replace(/[0-9.]/g, '').trim();
+            const wrong1 = (numAns + (Math.random() > 0.5 ? 10 : -10)) + " " + unit;
+            const wrong2 = (numAns * 10) + " " + unit;
+            
+            let options = [correctAns, wrong1, wrong2].sort(() => Math.random() - 0.5);
+            
+            optEl.innerHTML = options.map(opt => `
+                <button onclick="checkAnswer('${opt}', '${correctAns}', '${hero}')" class="py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg text-sm font-bold shadow-md transition-colors">
+                    ${opt}
+                </button>
+            `).join('');
+
+            modal.classList.remove('hidden');
+        }
+
+        function checkAnswer(selected, correct, hero) {
+            if (selected === correct) {
+                // Correct
+                scores[hero] += 10;
+                totalCorrect++;
+                
+                // Remove the trash visually
+                if(selectedTrashEl) selectedTrashEl.remove();
+                
+                // Wave progression
+                if (totalCorrect === 5) { currentWave = 2; updateWaveUI(); }
+                if (totalCorrect === 10) { currentWave = 3; updateWaveUI(); }
+                if (totalCorrect === 15) { currentWave = 4; updateWaveUI(); }
+            } else {
+                // Wrong -> Penalty time
+                timeLeft = Math.max(0, timeLeft - 2); 
+            }
+            
+            resetSelection();
+            updateUI();
+        }
+
+        function updateWaveUI() {
+            const wd = document.getElementById('waveDisplay');
+            wd.innerText = currentWave > 3 ? "FINAL WAVE" : `WAVE ${currentWave}`;
+            wd.classList.add('scale-125', 'text-yellow-400');
+            setTimeout(() => wd.classList.remove('scale-125', 'text-yellow-400'), 500);
+        }
+
+        function updateUI() {
+            ['eko', 'teo', 'logi'].forEach(h => {
+                document.getElementById(`score${h.charAt(0).toUpperCase() + h.slice(1)}`).innerText = scores[h];
+            });
+            document.getElementById('timerDisplay').innerText = timeLeft;
+        }
+
+        function endGame() {
+            clearInterval(timerInt);
+            clearInterval(spawnInt);
+            document.getElementById('gameScreen').classList.add('hidden');
+            
+            const vs = document.getElementById('victoryScreen');
+            vs.classList.remove('hidden');
+
+            // Find Winner among Active Heroes
+            let maxScore = -1;
+            let winner = '';
+            
+            activeHeroes.forEach(h => {
+                if (scores[h] > maxScore) {
+                    maxScore = scores[h];
+                    winner = h;
+                }
+            });
+
+            // If tie or all 0, just pick the first active
+            if (maxScore === 0) winner = activeHeroes[0];
+
+            document.getElementById('winnerScore').innerText = maxScore;
+            document.getElementById('winnerName').innerText = winner.toUpperCase();
+            
+            const imgs = {
+                eko: "https://i.ibb.co.com/nsd7gYkh/35067.png",
+                teo: "https://i.ibb.co.com/L3tb8t4/35072.png",
+                logi: "https://i.ibb.co.com/JF8GRzJy/35079-removebg-preview.png"
+            };
+            document.getElementById('winnerImg').src = imgs[winner];
+            
+            document.getElementById('victorySubtitle').innerText = activeHeroes.length > 1 ? "Duel Selesai!" : "Misi Selesai!";
+        }
+
+        function resetToConfig() {
+            document.getElementById('victoryScreen').classList.add('hidden');
+            document.getElementById('configScreen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
